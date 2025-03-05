@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Document</title>
+
+    <style>
+        .navbar { 
+            background-color: #1a75c4;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            height: 50px;
+        }
+
+        .navbar a {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <!-- Botão para abrir o modal -->
+        <a href="#" id="abrir-forms" data-bs-toggle="modal" data-bs-target="#userModal">
+            Clique aqui para abrir o formulário
+        </a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Formulário de Cadastro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Matricula do aluno</label>
+                            <input type="text" class="form-control" id="name" placeholder="" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Tipo da ocorrência</label>
+                            <input type="text" class="form-control" id="email" placeholder="" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password1" class="form-label">Relato do funcionário</label>
+                            <input type="text" class="form-control" id="password1" placeholder="" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password2" class="form-label">Relato do aluno</label>
+                            <input type="text" class="form-control" id="password2" placeholder="" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="conduta" class="form-label">Conduta</label>
+                            <input type="text" class="form-control" id="conduta" placeholder="" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+    </script>
+</body>
+</html>

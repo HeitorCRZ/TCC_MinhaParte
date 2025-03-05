@@ -1,0 +1,204 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", serif;
+}
+.wrapper {
+    display: flex; /* Menu e conteúdo lado a lado */
+}
+
+.menu-desktop{
+    text-align:center;
+    height: 100vh;
+    padding: 20px;
+    background-color: #00488B;
+}
+
+.container .texto-inicio{
+    background-color: rgb(220, 218, 217);
+
+}
+
+.menu-desktop nav ul li {
+    padding: 10px;
+}
+
+
+header .menu-desktop nav ul {
+    list-style-type: none;
+
+}
+
+
+header .menu-desktop nav ul li a {
+    list-style-type: none;
+    display:block;
+    margin: 10px 0 ;
+    color: #ffffff;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+
+ .menu-desktop nav a:hover {
+    list-style-type: none;
+    transform: scale(1.05);
+}
+.container {
+    flex: 1; /* Ocupa o espaço restante */
+    display: flex;
+    flex-direction: column; /* Alinha o conteúdo em coluna */
+    padding: 20px;
+    height: 100%;
+}
+.box-ocorrenciasPendentes {
+    background-color: rgb(220, 218, 217);
+
+    text-align: center;
+    margin-left: auto;
+    padding-right: 10px;
+    text-align: left;
+    width: 90%;
+
+}
+.box-dadosRecentes{
+    background-color: rgb(220, 218, 217);
+
+    margin-bottom: 50px;
+}
+.box-ocorrenciasPendentes h3 {
+    padding-left: 10px;
+}
+
+.box-AlunosAlerta{
+    background-color: rgb(220, 218, 217);
+
+}
+.horizontal { 
+    max-width: 640px;
+    padding-right: 20px;
+    width: 100%;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column; 
+}
+.caixas {
+
+    display: flex;
+    justify-content: center; /* Centraliza as caixas */
+    gap: 15px;
+    margin-top: 70px;
+}
+
+.box-pequeno {
+    width: 200px;
+    padding: 20px;
+    background-color: rgb(218, 100, 41);
+    text-align: center;
+}
+
+
+/* estilizacao do menu mobile*/
+
+.menu-mobile { 
+    position: absolute;
+    top:0;
+    left: 0;
+    width: 100%;
+    background-color:#00488B;
+    visibility: hidden;
+    height: 0;
+    transition: 0.5s;
+    overflow: hidden;
+    /* quando fechar o menu eles vao junto */
+}
+
+.menu-mobile nav a { 
+    list-style-type: none;
+    display:block;
+    margin: 30px 0 15px 0 ;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 20px 30px;
+
+    transition: 0.2s;
+}
+
+.menu-mobile nav a:hover {
+    list-style-type: none;
+    transform: scale(1.05);
+    background-color:#0a5397;
+}
+
+#btn-menu{
+    background: transparent;
+    width: 50px;
+    height: 50px;
+    outline: none;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid #fff;
+    transition: 0.2s;
+    display: none;
+    z-index: 1000;
+
+}
+
+.linha {
+    position: relative;
+    height: 3px;
+    background: #fff;
+    display: block;
+    width: 25px;
+    margin: 5px auto;
+    transform-origin: center;
+    transition: 0.5s;
+}
+button.ativo .linha:nth-child(1) {
+    transform: translateY(37.5px) rotate(-42deg);
+    background-color: white;
+    bottom: 67.5%;
+}
+
+button.ativo .linha:nth-child(3) {
+    transform: translateY(-37.5px) rotate(42deg);
+    background-color: white;
+    top: 60%;
+}
+
+button.ativo .linha:nth-child(2){
+    opacity: 0;
+}
+
+button.ativo {
+    
+        position: fixed; /* Fixa o botão na tela */
+        top: 20px; /* Ajuste conforme necessário */
+        right: 20px; /* Ajuste conforme necessário */
+        z-index: 1100; /* Garante que fique acima do menu */
+    
+    
+}
+
+
+@media screen and (max-width:700px) {
+    .menu-desktop nav ul  {
+        display: none;
+    }
+    .menu-mobile.abrir{
+        visibility: visible;
+        height: 100vh;
+    }
+ 
+    #btn-menu {
+        display: block;
+        z-index: 1000;
+
+    }
+
+    
+    .container{
+        display: block;
+    }
+}

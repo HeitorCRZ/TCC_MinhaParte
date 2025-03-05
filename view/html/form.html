@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <title>Document</title>
+    <style>
+    .container-wrapper {
+        display: flex;
+        justify-content: center; /* Centraliza o conteúdo */
+        align-items: flex-start;
+        gap: 20px; /* Espaço entre os elementos */
+        padding: 20px;
+    }
+
+    .form-container {
+        width: 40%; /* Largura do formulário */
+        max-width: 400px; /* Evita que fique muito grande */
+    }
+
+    .student-info {
+        width: 30%; /* Largura do card */
+        max-width: 300px;
+        height: 350px;
+        background-color: #1a75c4;
+        color: white;
+        padding: 15px;
+        border-radius: 9px;
+        display: none; /* Oculto inicialmente */
+    }
+
+    /* Responsividade para telas menores */
+    @media (max-width: 600px) {
+        .container-wrapper {
+            flex-direction: column; /* Empilha no mobile */
+            align-items: center;
+        }
+
+        .form-container, .student-info {
+            width: 90%; /* Ocupa quase toda a largura */
+            max-width: 100%;
+        }
+    }
+
+
+
+        .navbar { 
+            background-color: #1a75c4;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            height: 50px;
+        }
+        .navbar a {
+            color: white;
+        }
+        .suggestions {
+            border: 1px solid #ddd;
+            border-radius: 9px;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            background: white;
+            width: 85%;
+        }
+        .suggestions div {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .suggestions div:hover {
+            background-color: #f0f0f0;
+        }
+
+        .modal-title{
+            margin-bottom: 10px;
+        }
+        
+    </style>
+</head>
+<body>
+
+
+
+
+    <div class="container-wrapper">
+        <!-- Div do formulário -->
+        <div class="form-container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Formulário de Cadastro</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="matricula" placeholder="" required>
+                                <span class="input-group-text" id="botaoPesquisa">
+                                    <i class="bi bi-search"></i>
+                                </span>
+                            </div>
+                            <div class="suggestions" id="sugestaoMatriculas"></div>
+                        </div>
+      
+                        <div class="mb-3">
+                            <label for="relato" class="form-label">Relato do funcionário</label>
+                            <textarea class="form-control" id="relato" rows="2" required></textarea>
+                        </div>
+    
+                        <div class="mb-3">
+                            <label for="conduta" class="form-label">Arquivo 'opcional'</label>
+                            <input type="text" class="form-control" id="conduta" required>
+                        </div>
+    
+                        <button type="submit" class="btn btn-primary" id="botaoOk">Enviar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Card do aluno -->
+        <div id="studentInfo" class="student-info"></div>
+    </div>
+
+    <script>
+        const botaoPesquisa = document.getElementById('botaoPesquisa');
+        const sugestaoMatriculas = document.getElementById('sugestaoMatriculas');
+        const matriculaAluno = document.getElementById("matricula");
+        const botaoOk = document.getElementById("botaoOk")
+        const divCardAluno = document.getElementById("studentInfo")
+
+        
+        matriculaAluno.addEventListener('input', function () {
+            const query = matriculaAluno.value; 
+            sugestaoMatriculas.innerHTML = '';
+
+            if (query) {
+                let uri_get_matriculas = `/alunos/matriculas/${query}`;
+                fetch(uri_get_matriculas, {
+                    method: 'get',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    processarResultados(data);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+            }
+        });
+
+        function processarResultados (resultadojson) {
+            console.log('resultadojson',resultadojson)
+            if (resultadojson) {
+                resultadojson.matriculas.forEach(obj => {
+                    const matricula = obj.matricula;
+                    const div = document.createElement('div');
+                    div.textContent = matricula;
+                    div.addEventListener('click', function () {
+                        matriculaAluno.value = matricula;
+                        sugestaoMatriculas.innerHTML = '';
+                    });
+                    sugestaoMatriculas.appendChild(div);
+                });
+            }
+        }
+       
+        botaoPesquisa.onclick = function ()  {
+            criarAbaAluno()
+        }
+
+        function criarAbaAluno() {
+    let uri_get_aluno = `/alunos/${matriculaAluno.value}`;
+    fetch(uri_get_aluno, {
+        method: 'get',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then((response) => response.json())
+    .then((data) => {
+        processarDadosAlunos(data);
+        document.getElementById('studentInfo').style.display = 'block'; // Exibe o card
+
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
+}
+
+function processarDadosAlunos(resultadojson) {
+    const studentInfo = document.getElementById('studentInfo');
+    studentInfo.innerHTML = '';
+
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&times;";
+    closeButton.style.float = "right";
+    closeButton.style.background = "transparent";
+    closeButton.style.border = "none";
+    closeButton.style.color = "white";
+    closeButton.style.fontSize = "20px";
+    closeButton.style.cursor = "pointer";
+    closeButton.onclick = () => studentInfo.classList.remove('show');
+
+    const nome = document.createElement("p");
+    nome.textContent = `Nome Completo: ${resultadojson.nome}`;
+    
+    const turma = document.createElement("p");
+    turma.textContent = `Turma: ${resultadojson.turma}`;
+
+    studentInfo.appendChild(closeButton);
+    studentInfo.appendChild(nome);
+    studentInfo.appendChild(turma);
+}
+
+        botaoOk.onclick = function ()  {
+            criarOcorrencia()
+        }
+
+        function criarOcorrencia () {
+            const horarioClique = new Date();
+            const matricula = matriculaAluno.value
+            console.log("Horário do clique:", horarioClique);
+            console.log("MAtricula do aluno selecionada : ", matricula)
+        }
+        
+    </script>
+</body>
+</html>
