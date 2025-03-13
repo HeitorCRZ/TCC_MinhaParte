@@ -85,12 +85,14 @@
                     mensage_error.style.display = "block";
                     return;
                 } else {
+                    console.log("Registro = "+ respJson.Cargo);
                     mensage_error.style.display = "none";
-                    console.log("teste " + JSON.stringify(respJson));
-                    localStorage.clear();
                     localStorage.setItem("Funcionario", JSON.stringify(respJson));
-                    
-                    window.location.href = "../html/paginaInicial.html";
+                    if (respJson.Cargo == 2){
+                        window.location.href = "../html/paginaCoordenacao.html";
+                    }else {
+                        window.location.href = "../html/paginaProfessor.html";
+                    }
                 }   
             } catch (error) {
                 console.error("Erro ao processar o JSON:", error);

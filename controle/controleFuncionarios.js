@@ -83,9 +83,11 @@ module.exports = class ControlFuncionario {
             const objResposta = {
                 resposta: "Sucesso ao logar",
                 token: novoToken,
-                Funcionario: objFuncionario,
+                Funcionario: objFuncionario.nome,
+                Cargo : objFuncionario.TipoFuncionario_idTipoFuncionario,
                 status: true
             };
+
 
             res.status(200).send(objResposta);
         } catch (error) {
