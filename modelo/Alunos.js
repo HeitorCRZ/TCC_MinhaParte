@@ -12,7 +12,7 @@ module.exports = class Aluno {
     async getAluno() {
         const conexao = Banco.getConexao();
         console.log(this.matricula);
-        const mysql = "SELECT curso, nome, turma FROM Aluno WHERE matricula = ?";
+        const mysql = "SELECT * FROM Aluno WHERE matricula = ?";
     
         try {
             const [result] = await conexao.promise().execute(mysql, [this._matricula]);

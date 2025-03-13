@@ -4,7 +4,7 @@ class Banco {
     static HOST = 'localhost';
     static USER = 'root';
     static PWD = '060807';
-    static DB = 'ocorrenciasescolares';
+    static DB = 'bancotcc_teste';
     static PORT = 3306;
     static CONEXAO = null;
 

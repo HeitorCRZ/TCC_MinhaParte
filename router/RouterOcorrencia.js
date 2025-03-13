@@ -19,6 +19,7 @@ module.exports = class RouterOcorrencia {
                 '/cadastrar', 
                 upload.single("arquivo"), 
                 (req, res, next) => this._middleOcorrencia.validarDadosForms(req, res, next),
+                (req, res, next) => this._middleOcorrencia.validarMatricula(req, res, next),
                 (req, res) => this._controleOcorrencia.controle_ocorrencias_RegistrarOcorrenciaProfessor(req, res)
             );
             return this._router;

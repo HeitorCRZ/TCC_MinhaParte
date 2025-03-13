@@ -6,13 +6,14 @@ module.exports = class Ocorrencia {
         this._relatoProfessor = null;
         this._arquivo = null;
         this._registroProfessor = null;
+        this._idOcorrencia = null;
     }
 
-    async create_ocorrenciaProfessor() { 
+    async create_ocorrenciaProfessor_ocorrencia() { 
         const conexao = Banco.getConexao();
-        const mysql = "INSERT INTO ocorrencia (Aluno_matricula, relatoFuncionario, momento, arquivo, Funcionario_registro_Professor, status) VALUES (?, ?, NOW(), ?, ?, 0);";
+        const mysql = "INSERT INTO ocorrencia (Funcionario_registro_Professor, relatoFuncionario, momento, statusOcorrencia, arquivo) VALUES (?, ?, NOW(), 0, ?);";
+        
         console.log("Valores inseridos:", {
-            matriculaAluno: this._matriculaAluno,
             relatoProfessor: this._relatoProfessor,
             arquivo: this._arquivo,
             registroProfessor: this._registroProfessor
@@ -20,18 +21,39 @@ module.exports = class Ocorrencia {
         
         try {
             const [result] = await conexao.promise().execute(mysql, [ 
-                this._matriculaAluno,
+                this._registroProfessor,
                 this._relatoProfessor,
-                this._arquivo,
-                this._registroProfessor
+                this._arquivo
             ]);
-            return result.affectedRows > 0;
+            
+            return result.insertId; 
+        } catch (error) {
+            console.log("Erro>>" + error);
+            return null;
+        }
+    }
+    
+    async create_ocorrenciaProfessor_aluno() { 
+        const conexao = Banco.getConexao();
+        const mysql = "INSERT INTO ocorrencia_aluno (idOcorrencia, Aluno_matricula) VALUES (?, ?);";
+        
+        console.log("Valores inseridos:", {
+            idOcorrencia: this._idOcorrencia,
+            matriculaAluno: this._matriculaAluno
+        });
+        
+        try {
+            const [result] = await conexao.promise().execute(mysql, [ 
+                this._idOcorrencia,
+                this._matriculaAluno
+            ]);
+            
+            return  result.affectedRows > 0;
         } catch (error) {
             console.log("Erro>>" + error);
             return false;
         }
     }
-    
 
     get matriculaAluno() {
         return this._matriculaAluno;
@@ -64,4 +86,13 @@ module.exports = class Ocorrencia {
     set registroProfessor(valor) {
         this._registroProfessor = valor;
     }
+
+    get idOcorrencia() {
+        return this._idOcorrencia;
+    }
+    
+    set idOcorrencia(valor) {
+        this._idOcorrencia = valor;
+    }
+    
 };
