@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/formsOcorrencia.css">
+
+    <!-- fontes das letras -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+
+    <!-- fontes do bootstrap -->
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Bootstrap JS (necessário para o modal funcionar corretamente) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body.modal-open {
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <header>
+            <div class="wrapper"> <!-- Novo wrapper para separar o menu -->
+
+                <div class="menu-desktop">
+                    <button onclick="abrirmenu()" id="btn-menu">
+                        <span class="linha"></span>
+                        <span class="linha"></span>
+                        <span class="linha"></span>
+                    </button>
+                    <nav>
+                        <ul>
+                            <li><a href="#" onclick="voltarPaginaAnterior(); return false;">Início</a></li>
+                            <li><a href="#">home</a></li>
+                            <li><a href="#">home</a></li>
+                            <li><a href="#">home</a></li>
+                            <li><a href="#">home</a></li>
+                        </ul>
+                    </nav>
+                </div>
+
+
+                <div class="menu-mobile" id="menu-mobile">
+                    <nav>
+                        <ul>
+                            <li><a href="#" onclick="voltarPaginaAnterior(); return false;">Início</a></li>
+                            <li><a href="#">home</a></li>
+                            <li><a href="#">home</a></li>
+                            <li><a href="#">home</a></li>
+                            <li><a href="#">home</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="container-wrapper">
+                    <!-- Div do formulário -->
+                    <div class="form-container">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Formulário de Cadastro</h5>
+                            </div>
+                            <div class="modal-body">
+                                <form id="userForm">
+                                    <!-- Container do inputMatricula -->
+                                    <div class="mb-3">
+                                        <div class="input-group">
+                                            <button type="button" class="btn btn-success" id=" btnAdicionarMatricula" onclick="adicionarMatricula()">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                            <input type="text" class="form-control" id="matricula" placeholder="" required>
+                                            <div class="divpesquisa">
+                                                <span class="input-group-text" id="botaoPesquisa">
+                                                    <i class="bi bi-search"></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="suggestions" id="sugestaoMatriculas"></div>
+                                    </div>
+                    
+                                    <!-- Card do aluno (AGORA DENTRO DO FORMULÁRIO) -->
+                                    <div id="studentInfo" class="student-info"></div>
+                    
+                                    <!-- Restante do formulário (Relato, Arquivo, Botões) -->
+                                    <div class="mb-3">
+                                        <label for="relato" class="form-label" id="relatoFuncionario">Relato do funcionário</label>
+                                        <textarea class="form-control" id="relato" rows="2" required></textarea>
+                                    </div>
+                    
+                                    <div class="mb-3">
+                                        <label for="arquivo" class="form-label">Anexar Arquivo (opcional)</label>
+                                        <input type="file" class="form-control" id="arquivo">
+                                    </div>
+                    
+                                    <!-- Botões -->
+                                    <div class="d-flex align-items-center">
+                                        <button type="submit" class="btn btn-primary" id="botaoOk">Enviar</button>
+                                        <button type="button" class="btn btn-secondary ms-2 d-none" id="verMatriculas" onclick="abrirModal()">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card do aluno -->
+                </div>
+
+            </div>
+        </header>
+    </main>
+
+    <div class="modal fade" id="modalMatriculas" tabindex="-1" aria-labelledby="modalMatriculasLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalMatriculasLabel">Matrículas Adicionadas</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+              <ul id="listaMatriculas" class="list-group"></ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script>
+        /*codigo para o menu do site */
+        const menuDiv = document.getElementById("menu-mobile")
+        const btnAnimar = document.getElementById("btn-menu")
+        const forms = document.getElementById("container-wrapper")
+
+        /*codigo para criar Ocorrencia */
+        const matriculaAluno = document.getElementById("matricula");
+        const relatoAluno = document.getElementById("relato");
+        const arquivoInput = document.getElementById("arquivo");
+        
+        /*codigo para o funcionamento do forms no site */
+        const botaoPesquisa = document.getElementById('botaoPesquisa');
+        const sugestaoMatriculas = document.getElementById('sugestaoMatriculas');
+        const botaoOk = document.getElementById("botaoOk")
+        const divCardAluno = document.getElementById("studentInfo")
+
+        let vetorMatriculas = [];
+
+        btnAnimar.addEventListener('click', animarMenu)
+        function animarMenu() {
+            menuDiv.classList.toggle('abrir')
+            btnAnimar.classList.toggle('ativo')
+
+            forms.style.display = "none";
+
+            if (menuDiv.classList.contains('abrir')) {
+                forms.style.display = "none"; // Esconde o formulário
+            } else {
+                forms.style.display = "flex"; // Mostra o formulário novamente
+            }
+        }
+
+
+        matriculaAluno.addEventListener('input', function () {
+            const query = matriculaAluno.value;
+            sugestaoMatriculas.innerHTML = '';
+
+            if (query) {
+                let uri_get_matriculas = `/alunos/matriculas/${query}`;
+                fetch(uri_get_matriculas, {
+                    method: 'get',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then((response) => response.json())
+                    .then((data) => {
+                        processarResultados(data);
+                    })
+                    .catch((error) => {
+                        console.error("Error:", error);
+                    });
+            }
+        });
+
+        function processarResultados(resultadojson) {
+            if (resultadojson) {
+                resultadojson.matriculas.forEach(obj => {
+                    const matricula = obj.matricula;
+                    const div = document.createElement('div');
+                    div.textContent = matricula;
+                    div.addEventListener('click', function () {
+                        matriculaAluno.value = matricula;
+                        sugestaoMatriculas.innerHTML = '';
+                    });
+                    sugestaoMatriculas.appendChild(div);
+                });
+            }
+        }
+
+        botaoPesquisa.onclick = function () {
+            criarAbaAluno()
+        }
+
+        function criarAbaAluno() {
+            let uri_get_aluno = `/alunos/${matriculaAluno.value}`;
+            fetch(uri_get_aluno, {
+                method: 'get',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    processarDadosAlunos(data);
+                    document.getElementById('studentInfo').style.display = 'block'; // Exibe o card
+
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                });
+        }
+
+        function processarDadosAlunos(resultadojson) {
+            const studentInfo = document.getElementById('studentInfo');
+            studentInfo.innerHTML = ''; // Limpa o conteúdo anterior
+            studentInfo.style.display = "block"; // Exibe o card
+
+            const closeButton = document.createElement("button");
+            closeButton.classList.add("btn-close", "custom-close"); // Classe do Bootstrap + customização
+            closeButton.setAttribute("aria-label", "Close"); // Acessibilidade
+            closeButton.onclick = () => {
+                studentInfo.style.display = "none"; // Esconde o card
+            };
+
+            const nome = document.createElement("p");
+            nome.textContent = `Nome Completo: ${resultadojson.nome}`;
+
+            const turma = document.createElement("p");
+            turma.textContent = `Turma: ${resultadojson.turma}`;
+
+            studentInfo.appendChild(closeButton);
+            studentInfo.appendChild(nome);
+            studentInfo.appendChild(turma);
+        }
+
+        botaoOk.onclick = function () {
+            criarOcorrencia()
+        }
+
+        function criarOcorrencia() {
+            const dadosSalvos = JSON.parse(localStorage.getItem("Funcionario")); 
+            const registroProfessor = dadosSalvos.Funcionario._registro;
+            const arquivo = arquivoInput.files[0];
+            const relato = relatoAluno.value;
+            
+            console.log("Matrículas enviadas:", vetorMatriculas);
+
+            const formData = new FormData();
+            if (vetorMatriculas == null){
+                alert("Nenhuma Matricula Adicionada!!");
+            }else{
+                formData.append("matriculas", JSON.stringify(vetorMatriculas));
+                formData.append("relato", relato);
+                formData.append("registroProfessor", registroProfessor);
+                if (arquivo) {
+                    formData.append("arquivo", arquivo); // Envia o arquivo corretamente
+                }
+                const uri = '/ocorrencias/cadastrar';
+                fetch(uri, {
+                    method: "POST",
+                    body: formData // Usa FormData
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.status === false) {
+                        alert("Erro ao enviar ocorrência: " + data.error);
+                    } else {
+                        alert("Ocorrência cadastrada com sucesso!");
+                        document.getElementById("userForm").reset();
+                        vetorMatriculas = [];
+                        document.getElementById("verMatriculas").classList.add("d-none");
+                    }
+                }).catch(error => {
+                    console.error("Erro ao enviar os dados:", error);
+                    alert("Erro ao enviar os dados.");
+                });
+            }
+        }
+
+
+        //armazenar  a pagina anterior dinamicamente
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.referrer) {
+                sessionStorage.setItem("paginaAnterior", document.referrer);
+            }
+        });
+
+        // Criar botão para voltar
+        function voltarPaginaAnterior() {
+            const paginaAnterior = sessionStorage.getItem("paginaAnterior");
+            if (paginaAnterior) {
+                window.location.href = paginaAnterior;
+            } else {
+                alert("Nenhuma página anterior encontrada!");
+            }
+        }
+
+
+        function adicionarMatricula() {
+            if (matriculaAluno.value.trim() === "") {
+                alert("Digite uma matrícula válida!"); // Validação para evitar campos vazios
+                return;
+            }
+            if (!vetorMatriculas.includes(matriculaAluno.value)) {
+                vetorMatriculas.push(matriculaAluno.value)
+                console.log("Matrículas atuais:", vetorMatriculas);
+            }else{
+                alert("Essa matricula ja foi adicionada!!");
+            }
+            let botaoVerMatriculas = document.getElementById("verMatriculas");
+            
+            botaoVerMatriculas.classList.remove("d-none");
+
+            matriculaAluno.textContent = ""
+            matriculaAluno.value = "";
+
+        }
+
+        function abrirModal() {
+            let listaMatriculas = document.getElementById("listaMatriculas");
+            listaMatriculas.innerHTML = ""; // Limpa a lista antes de atualizar
+
+            if (vetorMatriculas.length === 0) {
+                listaMatriculas.innerHTML = "<li class='list-group-item text-center'>Nenhuma matrícula adicionada.</li>";
+            } else {
+                vetorMatriculas.forEach((matricula, index) => {
+                    let li = document.createElement("li");
+                    li.classList.add("list-group-item", "d-flex", "justify-content-between", "align-items-center");
+                    li.innerHTML = `
+                ${matricula}
+                <button class="btn btn-danger btn-sm" onclick="removerMatricula(${index})">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            `;
+                    listaMatriculas.appendChild(li);
+                });
+            }
+
+            // Abrindo o modal corretamente
+            let modalElement = document.getElementById("modalMatriculas");
+            let modalInstance = bootstrap.Modal.getInstance(modalElement);
+
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalElement);
+            }
+
+            modalInstance.show();
+        }
+
+
+        function removerMatricula(index) {
+            vetorMatriculas.splice(index, 1); // Remove do array
+
+            abrirModal(); // Atualiza a lista dentro do modal
+
+            // Se não houver mais matrículas, esconde o botão do olho e fecha o modal
+            if (vetorMatriculas.length === 0) {
+                document.getElementById("verMatriculas").classList.add("d-none");
+                let modalInstance = bootstrap.Modal.getInstance(document.getElementById("modalMatriculas"));
+                if (modalInstance) modalInstance.hide();
+            }
+        }
+
+    </script>
+</body>
+
+</html>
