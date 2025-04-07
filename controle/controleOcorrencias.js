@@ -39,4 +39,25 @@ module.exports = class ControlOcorrencia {
             return res.status(500).json({ msg: "Erro interno do servidor" });
         }
     }
+
+    async controle_ocorrencias_buscarDadosOcorrenciasPendentes(req, res){
+        try {
+            const objOcorrencia = new Ocorrencia();
+            const rows = await objOcorrencia.get_buscarDadosOcorrenciasPendentes();
+    
+            const ocorrencias = rows.map((row, index) => ({
+                id: index + 1,
+                relatofuncionario: row.relatoFuncionario,
+                quantidadeAlunos: row.quantidadeAlunos,
+                turmas: row.turmas,
+                nomeFuncionario: row.nomeFuncionario
+            }));
+    
+            res.status(200).json(ocorrencias);
+        } catch (error) {
+            console.error("Erro ao buscar ocorrências pendentes:", error);
+            res.status(500).json({ error: "Erro interno do servidor" });
+        }
+
+    }
 }

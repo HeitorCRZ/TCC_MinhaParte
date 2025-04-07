@@ -29,8 +29,7 @@ const upload = multer({
     }
 });
 
-module.exports = class RouterOcorrencia {
-    constructor() {
+module.exports = class RouterOcorrencia {    constructor() {
         this._router = express.Router();
         this._controleOcorrencia = new ControlOcorrencia();
         this._middleOcorrencia = new MiddlewareOcorrencia();
@@ -43,6 +42,11 @@ module.exports = class RouterOcorrencia {
                 upload.single("arquivo"), 
                 (req, res, next) => this._middleOcorrencia.validarDadosForms(req, res, next),
                 (req, res) => this._controleOcorrencia.controle_ocorrencias_RegistrarOcorrenciaProfessor(req, res)
+            );
+            this._router.get(
+                '/buscarDadosOcorrenciasPendentes', 
+                upload.single("arquivo"), 
+                (req, res) => this._controleOcorrencia.controle_ocorrencias_buscarDadosOcorrenciasPendentes(req, res)
             );
             return this._router;
         } catch (error) {

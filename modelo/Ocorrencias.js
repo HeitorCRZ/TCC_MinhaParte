@@ -54,7 +54,50 @@ module.exports = class Ocorrencia {
             return false;
         }
     }
+    async get_buscarDadosOcorrenciasPendentes() {
+        const sql = `
+            SELECT  
+                o.idOcorrencia,                                      -- ID da ocorrência
+                o.relatoFuncionario,                                 -- Relato do professor sobre a ocorrência
+                f.nome AS nomeFuncionario,                           -- Nome do professor (funcionário) responsável
 
+                GROUP_CONCAT(DISTINCT a.turma ORDER BY a.turma SEPARATOR ', ') AS turmas,
+                -- Agrupa todas as turmas dos alunos envolvidos na ocorrência, separadas por vírgula, sem repetições
+
+                COUNT(DISTINCT a.matricula) AS quantidadeAlunos
+                -- Conta quantos alunos diferentes estão associados a essa ocorrência
+
+            FROM ocorrencia o
+            JOIN funcionario f ON o.Funcionario_registro_Professor = f.registro
+            -- Junta com a tabela de funcionários para obter os dados do professor responsável
+
+            JOIN ocorrencia_aluno oa ON o.idOcorrencia = oa.idOcorrencia
+            -- Junta com a tabela de associação entre ocorrências e alunos
+
+            JOIN aluno a ON oa.Aluno_matricula = a.matricula
+            -- Junta com a tabela de alunos para acessar informações como a turma e matrícula
+
+            WHERE o.statusOcorrencia = 0
+            -- Considera apenas ocorrências com status 0 (ativas/não resolvidas)
+
+            GROUP BY o.idOcorrencia, o.relatoFuncionario, f.nome
+            -- Agrupa os dados por ocorrência e professor para usar agregações como COUNT e GROUP_CONCAT
+
+            ORDER BY o.momento ASC
+            -- Ordena as ocorrências da mais antiga para a mais recente
+        `;
+
+        try {
+            const conexao = Banco.getConexao();
+            const [rows] = await conexao.promise().execute(sql); 
+            rows.forEach(row => console.log("Relato:", row.relatoFuncionario));
+            return rows;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+    
     get matriculaAluno() {
         return this._matriculaAluno;
     }
