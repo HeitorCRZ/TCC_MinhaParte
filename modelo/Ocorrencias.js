@@ -12,13 +12,7 @@ module.exports = class Ocorrencia {
     async create_ocorrenciaProfessor_ocorrencia() { 
         const conexao = Banco.getConexao();
         const mysql = "INSERT INTO ocorrencia (Funcionario_registro_Professor, relatoFuncionario, momento, statusOcorrencia, arquivo) VALUES (?, ?, NOW(), 0, ?);";
-        
-        console.log("Valores inseridos:", {
-            relatoProfessor: this._relatoProfessor,
-            arquivo: this._arquivo,
-            registroProfessor: this._registroProfessor
-        });
-        
+               
         try {
             const [result] = await conexao.promise().execute(mysql, [ 
                 this._registroProfessor,
@@ -54,49 +48,79 @@ module.exports = class Ocorrencia {
             return false;
         }
     }
-    async get_buscarDadosOcorrenciasPendentes() {
+    async getDadosBasicosOcorrencias() {
         const sql = `
             SELECT  
-                o.idOcorrencia,                                      -- ID da ocorrência
-                o.relatoFuncionario,                                 -- Relato do professor sobre a ocorrência
-                f.nome AS nomeFuncionario,                           -- Nome do professor (funcionário) responsável
-
-                GROUP_CONCAT(DISTINCT a.turma ORDER BY a.turma SEPARATOR ', ') AS turmas,
-                -- Agrupa todas as turmas dos alunos envolvidos na ocorrência, separadas por vírgula, sem repetições
-
-                COUNT(DISTINCT a.matricula) AS quantidadeAlunos
-                -- Conta quantos alunos diferentes estão associados a essa ocorrência
-
+                o.idOcorrencia,
+                o.relatoFuncionario,
+                f.nome AS nomeFuncionario,
+                o.momento
             FROM ocorrencia o
             JOIN funcionario f ON o.Funcionario_registro_Professor = f.registro
-            -- Junta com a tabela de funcionários para obter os dados do professor responsável
-
-            JOIN ocorrencia_aluno oa ON o.idOcorrencia = oa.idOcorrencia
-            -- Junta com a tabela de associação entre ocorrências e alunos
-
-            JOIN aluno a ON oa.Aluno_matricula = a.matricula
-            -- Junta com a tabela de alunos para acessar informações como a turma e matrícula
-
             WHERE o.statusOcorrencia = 0
-            -- Considera apenas ocorrências com status 0 (ativas/não resolvidas)
-
-            GROUP BY o.idOcorrencia, o.relatoFuncionario, f.nome
-            -- Agrupa os dados por ocorrência e professor para usar agregações como COUNT e GROUP_CONCAT
-
             ORDER BY o.momento ASC
-            -- Ordena as ocorrências da mais antiga para a mais recente
         `;
+        const conexao = Banco.getConexao();
+        const [rows] = await conexao.promise().execute(sql);
+        return rows;
+    }
+    async  getTurmasPorOcorrencia() {
+        const sql = `
+            SELECT 
+                o.idOcorrencia,
+                GROUP_CONCAT(DISTINCT a.turma ORDER BY a.turma SEPARATOR ', ') AS turmas
+            FROM ocorrencia o
+            JOIN ocorrencia_aluno oa ON o.idOcorrencia = oa.idOcorrencia
+            JOIN aluno a ON oa.Aluno_matricula = a.matricula
+            WHERE o.statusOcorrencia = 0
+            GROUP BY o.idOcorrencia
+        `;
+        const conexao = Banco.getConexao();
+        const [rows] = await conexao.promise().execute(sql);
+        return rows;
+    }
 
+    async  getQuantidadeAlunosPorOcorrencia() {
+        const sql = `
+            SELECT 
+                o.idOcorrencia,
+                COUNT(DISTINCT a.matricula) AS quantidadeAlunos
+            FROM ocorrencia o
+            JOIN ocorrencia_aluno oa ON o.idOcorrencia = oa.idOcorrencia
+            JOIN aluno a ON oa.Aluno_matricula = a.matricula
+            WHERE o.statusOcorrencia = 0
+            GROUP BY o.idOcorrencia
+        `;
+        const conexao = Banco.getConexao();
+        const [rows] = await conexao.promise().execute(sql);
+        return rows;
+    }
+    async get_buscarDadosOcorrenciasPendentes() {
         try {
-            const conexao = Banco.getConexao();
-            const [rows] = await conexao.promise().execute(sql); 
-            rows.forEach(row => console.log("Relato:", row.relatoFuncionario));
-            return rows;
+            const dadosBasicos = await this.getDadosBasicosOcorrencias();
+            const turmas = await this.getTurmasPorOcorrencia();
+            const quantidades = await this.getQuantidadeAlunosPorOcorrencia();
+    
+            const mapTurmas = new Map(turmas.map(t => [t.idOcorrencia, t.turmas]));
+            const mapQuantidades = new Map(quantidades.map(q => [q.idOcorrencia, q.quantidadeAlunos]));
+    
+            const resultadoFinal = dadosBasicos.map(dado => ({
+                idOcorrencia: dado.idOcorrencia,
+                relatoFuncionario: dado.relatoFuncionario,
+                nomeFuncionario: dado.nomeFuncionario,
+                turmas: mapTurmas.get(dado.idOcorrencia) || '',
+                quantidadeAlunos: mapQuantidades.get(dado.idOcorrencia) || 0,
+                momento: dado.momento
+            }));
+    
+            return resultadoFinal;
         } catch (error) {
             console.error(error);
             return [];
         }
     }
+    
+    
     
     get matriculaAluno() {
         return this._matriculaAluno;
